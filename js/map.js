@@ -30,9 +30,7 @@ var avatars = ['img/avatars/user01.png', 'img/avatars/user02.png', 'img/avatars/
 // случайное число для price от 1000 до 1000000 и rooms от 1 до 5, для количества гостей guest, для координат
 
 var getRandomNumber = function (min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1);
-  rand = Math.round(rand);
-  return rand;
+  return Math.floor(Math.random() * (max - min + 1));
 };
 
 // функция для расчёта координат маркера
@@ -53,15 +51,11 @@ var getRandomArrayElement = function (array) {
 // функция создания массива photos в произвольном порядке
 
 var shufflePhoto = function (arr) {
-  var j;
-  var temp;
-  for (var i = arr.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    temp = arr[j];
-    arr[j] = arr[i];
-    arr[i] = temp;
-  }
-  return arr;
+  var photoArray = arr.slice();
+  photoArray.sort(function () {
+    return Math.random() - 0.5;
+  });
+  return photoArray;
 };
 
 // функция создания массива с features случайной длины
@@ -167,27 +161,27 @@ pinsList.appendChild(fragment);
 
 // Создание карточки
 
-var createCard = function () {
+var createCard = function (cardNumber) {
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-  cardTemplate.querySelector('.popup__title').textContent = adsNearbyList[0].offer.title;
-  cardTemplate.querySelector('.popup__text--address').textContent = adsNearbyList[0].offer.address;
-  cardTemplate.querySelector('.popup__text--price').textContent = adsNearbyList[0].offer.price + '₽/ночь';
-  cardTemplate.querySelector('.popup__type').textContent = getAppartamentListElement(adsNearbyList[0].offer.type);
-  cardTemplate.querySelector('.popup__text--capacity').textContent = adsNearbyList[0].offer.rooms + ' комнаты для ' + adsNearbyList[0].offer.guest;
-  cardTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + adsNearbyList[0].offer.checkin + ', выезд до ' + adsNearbyList[0].offer.checkout;
+  cardTemplate.querySelector('.popup__title').textContent = adsNearbyList[cardNumber].offer.title;
+  cardTemplate.querySelector('.popup__text--address').textContent = adsNearbyList[cardNumber].offer.address;
+  cardTemplate.querySelector('.popup__text--price').textContent = adsNearbyList[cardNumber].offer.price + '₽/ночь';
+  cardTemplate.querySelector('.popup__type').textContent = getAppartamentListElement(adsNearbyList[cardNumber].offer.type);
+  cardTemplate.querySelector('.popup__text--capacity').textContent = adsNearbyList[cardNumber].offer.rooms + ' комнаты для ' + adsNearbyList[cardNumber].offer.guest;
+  cardTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + adsNearbyList[cardNumber].offer.checkin + ', выезд до ' + adsNearbyList[cardNumber].offer.checkout;
 
   var featuresIconList = cardTemplate.querySelector('.popup__features');
   var featuresIcon = cardTemplate.querySelector('.popup__feature');
   featuresIconList.innerHTML = '';
 
-  for (var k = 0; k < adsNearbyList[0].offer.features.length; k++) {
+  for (var k = 0; k < adsNearbyList[cardNumber].offer.features.length; k++) {
     var featuresElement = featuresIcon.cloneNode(true);
     featuresElement.setAttribute('class', 'popup__feature');
-    featuresElement.classList.add('popup__feature' + '--' + adsNearbyList[0].offer.features[k]);
+    featuresElement.classList.add('popup__feature' + '--' + adsNearbyList[cardNumber].offer.features[k]);
     featuresIconList.appendChild(featuresElement);
   }
 
-  cardTemplate.querySelector('.popup__description').textContent = adsNearbyList[0].offer.description;
+  cardTemplate.querySelector('.popup__description').textContent = adsNearbyList[cardNumber].offer.description;
 
   var cards = cardTemplate.querySelector('.popup__photos');
   var photo = cardTemplate.querySelector('.popup__photo');
@@ -195,7 +189,7 @@ var createCard = function () {
 
   for (var j = 0; j < photosList.length; j++) {
     var photoCard = photo.cloneNode(true);
-    photoCard.src = photosList[j];
+    photoCard.src = adsNearbyList[cardNumber].offer.photos[j];
 
     cards.appendChild(photoCard);
   }
@@ -205,4 +199,4 @@ var createCard = function () {
 var map = document.querySelector('.map');
 var mapFilterContainer = document.querySelector('.map__filters-container');
 
-map.insertBefore(createCard(), mapFilterContainer);
+map.insertBefore(createCard(0), mapFilterContainer);
