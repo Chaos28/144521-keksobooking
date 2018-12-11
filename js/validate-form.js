@@ -2,10 +2,12 @@
 
 // валидация форм
 
-// изменение минимального значения цены и placeholder при изменении типа жилья
+// изменение минимального значения цены и placeholder при изменении типа жилья. Синхронизация времени заеда и выезда
 
 var houseType = document.querySelector('#type');
 var priceInput = document.querySelector('#price');
+
+// минимальные цены на жилье
 
 var MIN_PRICES = {
   bungalo: '0',
@@ -14,13 +16,28 @@ var MIN_PRICES = {
   palace: '10000'
 };
 
+// поиск select с временем заезда и выезда
+
+var CHECKIN = document.querySelector('#timein');
+var CHECKOUT = document.querySelector('#timeout');
+
+// количество комнат из списка
+
+var ROOM_QUANTITY = ['1', '2', '3', '100'];
+
+// поиск select с количеством комнат и гостей
+
+var roomSelect = document.querySelector('#room_number');
+var roomGuest = document.querySelector('#capacity');
+var roomGuestNumber = roomGuest.querySelectorAll('option');
+
+// установка минимальной цены за жилье
+
 var setMinPrice = function () {
   var type = houseType.value;
   priceInput.setAttribute('min', MIN_PRICES[type]);
   priceInput.setAttribute('placeholder', MIN_PRICES[type]);
 };
-
-houseType.addEventListener('change', setMinPrice);
 
 // функция задания стартового значения количества гостей для 1 комнаты по умолчанию (атрибут selected)
 
@@ -31,12 +48,6 @@ var getRoomGuestStart = function () {
 };
 
 // синхронизация количества комнат и допустимого числа гостей
-
-var ROOM_QUANTITY = ['1', '2', '3', '100'];
-
-var roomSelect = document.querySelector('#room_number');
-var roomGuest = document.querySelector('#capacity');
-var roomGuestNumber = roomGuest.querySelectorAll('option');
 
 var setGuestQuantity = function () {
   roomGuest.innerHTML = '';
@@ -65,5 +76,20 @@ var setGuestQuantity = function () {
   }
 };
 
+// синхронизация времени заезда и выезда (и наоборот)
+
+var timeSynchronize = function (evt) {
+  if (evt.target.closest('#timein')) {
+    CHECKOUT.value = CHECKIN.value;
+  }
+
+  CHECKIN.value = CHECKOUT.value;
+};
+
+houseType.addEventListener('change', setMinPrice);
+
 getRoomGuestStart();
 roomSelect.addEventListener('change', setGuestQuantity);
+
+CHECKIN.addEventListener('change', timeSynchronize);
+CHECKOUT.addEventListener('change', timeSynchronize);
