@@ -18,8 +18,8 @@ var MIN_PRICES = {
 
 // поиск select с временем заезда и выезда
 
-var CHECKIN = document.querySelector('#timein');
-var CHECKOUT = document.querySelector('#timeout');
+var checkin = document.querySelector('#timein');
+var checkout = document.querySelector('#timeout');
 
 // количество комнат из списка
 
@@ -80,10 +80,10 @@ var setGuestQuantity = function () {
 
 var timeSynchronize = function (evt) {
   if (evt.target.closest('#timein')) {
-    CHECKOUT.value = CHECKIN.value;
+    checkout.value = checkin.value;
   }
 
-  CHECKIN.value = CHECKOUT.value;
+  checkin.value = checkout.value;
 };
 
 houseType.addEventListener('change', setMinPrice);
@@ -91,5 +91,5 @@ houseType.addEventListener('change', setMinPrice);
 getRoomGuestStart();
 roomSelect.addEventListener('change', setGuestQuantity);
 
-CHECKIN.addEventListener('change', timeSynchronize);
-CHECKOUT.addEventListener('change', timeSynchronize);
+checkin.addEventListener('change', timeSynchronize);
+checkout.addEventListener('change', timeSynchronize);
