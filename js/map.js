@@ -309,7 +309,6 @@ mapPin.addEventListener('mouseup', function () {
   formAddressValue.setAttribute('value', getActivePinMainCoordinate()[0] + ', ' + getActivePinMainCoordinate()[1]);
 
   insertPin();
-
 });
 
 
