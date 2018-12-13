@@ -109,11 +109,15 @@
 
   // сброс формы при нажатии Очистить. Возвращает главный маркер на стартовую позицию
 
-  var resetButton = document.querySelector('.ad-form__reset');
+  var resetButtonClickHandler = document.querySelector('.ad-form__reset');
 
-  resetButton.addEventListener('click', function () {
+  resetButtonClickHandler.addEventListener('click', function () {
     window.map.classList.add('map--faded');
-    window.deleteCard();
+
+    if (window.map.querySelector('.map__card') !== null) {
+      window.deleteCard();
+    }
+
     mapPin.style.left = window.utilites.MAIN_PIN_START_X + 'px';
     mapPin.style.top = window.utilites.MAIN_PIN_START_Y + 'px';
     formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', ' + getNonActivePinMainCoordinate()[1]);

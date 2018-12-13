@@ -35,6 +35,8 @@
         window.deleteCard();
       }
 
+      // отрисовка карточки
+
       window.map.insertBefore(window.createCard(dataList), mapFilterContainer);
     });
     return pinElement;
