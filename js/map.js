@@ -11,17 +11,24 @@ var ESC_KEYCODE = 27;
 var CARDS_QUANTITY = 8;
 
 var PIN_WIDTH = 50;
-var PIN_HEIGHT = 70;
+var PIN_HEIGHT = 65;
 
 var MAIN_PIN_WIDTH = 65;
 var MAIN_PIN_HEIGHT = 65;
-
 var PIN_END_HEIGHT = 22;
 
-var PIN_X_MIN = 100;
-var PIN_X_MAX = 1100;
-var PIN_Y_MIN = 130;
-var PIN_Y_MAX = 630;
+var MAIN_PIN_START_X = 570;
+var MAIN_PIN_START_Y = 375;
+
+var Y_COORDINATES = {
+  min: 130 - PIN_HEIGHT - PIN_END_HEIGHT,
+  max: 630 - PIN_HEIGHT - PIN_END_HEIGHT
+};
+
+var X_COORDINATES = {
+  min: 0,
+  max: 1150
+};
 
 var PRICE_MIN = 1000;
 var PRICE_MAX = 1000000;
@@ -44,8 +51,8 @@ var getRandomNumber = function (min, max) {
 // функция для расчёта координат маркера
 
 var getPinCoordinates = function () {
-  var x = getRandomNumber(PIN_X_MIN, PIN_X_MAX) - (PIN_WIDTH / 2);
-  var y = getRandomNumber(PIN_Y_MIN, PIN_Y_MAX) - PIN_HEIGHT;
+  var x = getRandomNumber(X_COORDINATES.min, X_COORDINATES.max) - (PIN_WIDTH / 2);
+  var y = getRandomNumber(Y_COORDINATES.min, Y_COORDINATES.max) + PIN_HEIGHT + PIN_END_HEIGHT;
   var coordinates = [x, y];
   return coordinates;
 };
@@ -291,24 +298,99 @@ formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', '
 // Переводит страницу в активное состояние.
 // Отрисовывает маркеры, убирает атрибут disabled и класс у недоступных элементов формы
 
+var disabledForm = document.querySelectorAll('.ad-form--disabled');
+var disabledElements = document.querySelectorAll('[disabled]');
+
 var mapPin = document.querySelector('.map__pin--main');
 
-mapPin.addEventListener('mouseup', function () {
-  document.querySelector('.map').classList.remove('map--faded');
+// функция ограничения перемещения маркера
 
-  var disabledForm = document.querySelectorAll('.ad-form--disabled');
-  var disabledElements = document.querySelectorAll('[disabled]');
+var getMainPinMovement = function (coordinates, coordinatesObj) {
+  if (coordinates < coordinatesObj.min) {
+    return coordinatesObj.min;
+  }
+  if (coordinates > coordinatesObj.max) {
+    return coordinatesObj.max;
+  }
+  return coordinates;
+};
+
+mapPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+
+  var startCoordinates = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoordinates.x - moveEvt.clientX,
+      y: startCoordinates.y - moveEvt.clientY
+    };
+
+    startCoordinates = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    mapPin.style.left = getMainPinMovement(mapPin.offsetLeft - shift.x, X_COORDINATES) + 'px';
+    mapPin.style.top = getMainPinMovement(mapPin.offsetTop - shift.y, Y_COORDINATES) + 'px';
+    formAddressValue.setAttribute('value', getActivePinMainCoordinate()[0] + ', ' + getActivePinMainCoordinate()[1]);
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    if (map.classList.contains('map--faded')) {
+      insertPin();
+    }
+
+    document.querySelector('.map').classList.remove('map--faded');
+
+
+    for (var i = 0; i < disabledElements.length; i++) {
+      disabledElements[i].disabled = false;
+    }
+
+    for (var j = 0; j < disabledForm.length; j++) {
+      disabledForm[j].classList.remove('ad-form--disabled');
+    }
+
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
+
+// сброс формы при нажатии Очистить. Возвращает главный маркер на стартовую позицию
+
+var resetButton = document.querySelector('.ad-form__reset');
+
+resetButton.addEventListener('click', function () {
+  document.querySelector('.map').classList.add('map--faded');
+
+  mapPin.style.left = MAIN_PIN_START_X + 'px';
+  mapPin.style.top = MAIN_PIN_START_Y + 'px';
+  formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', ' + getNonActivePinMainCoordinate()[1]);
+  var mapPinsList = pinsList.querySelectorAll('.map__pin');
+
+  for (var k = adsNearbyList.length; k > 0; k--) {
+    var deletedPin = mapPinsList[k];
+    pinsList.removeChild(deletedPin);
+  }
 
   for (var i = 0; i < disabledElements.length; i++) {
-    disabledElements[i].removeAttribute('disabled');
+    disabledElements[i].disabled = true;
   }
 
   for (var j = 0; j < disabledForm.length; j++) {
-    disabledForm[j].classList.remove('ad-form--disabled');
+    disabledForm[j].classList.add('ad-form--disabled');
   }
-  formAddressValue.setAttribute('value', getActivePinMainCoordinate()[0] + ', ' + getActivePinMainCoordinate()[1]);
-
-  insertPin();
 });
-
-
