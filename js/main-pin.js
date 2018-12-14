@@ -8,8 +8,8 @@
 
   var getNonActivePinMainCoordinate = function () {
     var pinMainCoordinate = [];
-    pinMainCoordinate[0] = parseInt(pinMain.style.left, 10) + Math.floor(window.utilites.MAIN_PIN_WIDTH / 2);
-    pinMainCoordinate[1] = parseInt(pinMain.style.top, 10) + Math.floor((window.utilites.MAIN_PIN_HEIGHT / 2));
+    pinMainCoordinate[0] = parseInt(pinMain.style.left, 10) + Math.floor(window.constants.MAIN_PIN_WIDTH / 2);
+    pinMainCoordinate[1] = parseInt(pinMain.style.top, 10) + Math.floor((window.constants.MAIN_PIN_HEIGHT / 2));
 
     return pinMainCoordinate;
   };
@@ -18,8 +18,8 @@
 
   var getActivePinMainCoordinate = function () {
     var pinMainActiveCoordinate = [];
-    pinMainActiveCoordinate[0] = parseInt(pinMain.style.left, 10) + Math.floor(window.utilites.MAIN_PIN_WIDTH / 2);
-    pinMainActiveCoordinate[1] = parseInt(pinMain.style.top, 10) + window.utilites.MAIN_PIN_HEIGHT + window.utilites.PIN_END_HEIGHT;
+    pinMainActiveCoordinate[0] = parseInt(pinMain.style.left, 10) + Math.floor(window.constants.MAIN_PIN_WIDTH / 2);
+    pinMainActiveCoordinate[1] = parseInt(pinMain.style.top, 10) + window.constants.MAIN_PIN_HEIGHT + window.constants.PIN_END_HEIGHT;
 
     return pinMainActiveCoordinate;
   };
@@ -75,19 +75,19 @@
         y: moveEvt.clientY
       };
 
-      mapPin.style.left = getMainPinMovement(mapPin.offsetLeft - shift.x, window.utilites.X_COORDINATES) + 'px';
-      mapPin.style.top = getMainPinMovement(mapPin.offsetTop - shift.y, window.utilites.Y_COORDINATES) + 'px';
+      mapPin.style.left = getMainPinMovement(mapPin.offsetLeft - shift.x, window.constants.X_COORDINATES) + 'px';
+      mapPin.style.top = getMainPinMovement(mapPin.offsetTop - shift.y, window.constants.Y_COORDINATES) + 'px';
       formAddressValue.setAttribute('value', getActivePinMainCoordinate()[0] + ', ' + getActivePinMainCoordinate()[1]);
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      if (window.map.classList.contains('map--faded')) {
+      if (window.data.map.classList.contains('map--faded')) {
         window.insertPin();
       }
 
-      window.map.classList.remove('map--faded');
+      window.data.map.classList.remove('map--faded');
 
 
       for (var i = 0; i < disabledElements.length; i++) {
@@ -112,20 +112,20 @@
   var resetButtonClickHandler = document.querySelector('.ad-form__reset');
 
   resetButtonClickHandler.addEventListener('click', function () {
-    window.map.classList.add('map--faded');
+    window.data.map.classList.add('map--faded');
 
-    if (window.map.querySelector('.map__card') !== null) {
-      window.deleteCard();
+    if (window.data.map.querySelector('.map__card') !== null) {
+      window.utilites.deleteCard();
     }
 
-    mapPin.style.left = window.utilites.MAIN_PIN_START_X + 'px';
-    mapPin.style.top = window.utilites.MAIN_PIN_START_Y + 'px';
+    mapPin.style.left = window.constants.MAIN_PIN_START_X + 'px';
+    mapPin.style.top = window.constants.MAIN_PIN_START_Y + 'px';
     formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', ' + getNonActivePinMainCoordinate()[1]);
     var pinsList = document.querySelector('.map__pins');
     var mapPinsList = pinsList.querySelectorAll('.map__pin');
 
 
-    for (var k = window.adsNearbyList.length; k > 0; k--) {
+    for (var k = window.data.adsNearbyList.length; k > 0; k--) {
       var deletedPin = mapPinsList[k];
       pinsList.removeChild(deletedPin);
     }

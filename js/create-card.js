@@ -73,7 +73,7 @@
 
     // добавление обработчика закрытия карточки по нажатию на крестик
 
-    cardTemplate.querySelector('.popup__close').addEventListener('click', window.deleteCard);
+    cardTemplate.querySelector('.popup__close').addEventListener('click', window.utilites.deleteCard);
 
     return cardTemplate;
   };
@@ -81,9 +81,9 @@
   // добавление обработчика на закрытие карточки при нажатии ESC
 
   window.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.utilites.ESC_KEYCODE) {
-      if (window.map.querySelector('.map__card') !== null) {
-        window.deleteCard();
+    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+      if (window.data.map.querySelector('.map__card') !== null) {
+        window.utilites.deleteCard();
       }
     }
   });

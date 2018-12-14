@@ -31,13 +31,13 @@
     // При клике на другой маркер удаляется старая карточка и создается новая
 
     pinElement.addEventListener('click', function () {
-      if (window.map.querySelector('.map__card') !== null) {
-        window.deleteCard();
+      if (window.data.map.querySelector('.map__card') !== null) {
+        window.utilites.deleteCard();
       }
 
       // отрисовка карточки
 
-      window.map.insertBefore(window.createCard(dataList), mapFilterContainer);
+      window.data.map.insertBefore(window.createCard(dataList), mapFilterContainer);
     });
     return pinElement;
   };
@@ -45,8 +45,8 @@
   window.insertPin = function () {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < window.adsNearbyList.length; i++) {
-      fragment.appendChild(getPinTemplate(window.adsNearbyList[i]));
+    for (var i = 0; i < window.data.adsNearbyList.length; i++) {
+      fragment.appendChild(getPinTemplate(window.data.adsNearbyList[i]));
     }
 
     pinsList.appendChild(fragment);
