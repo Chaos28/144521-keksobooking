@@ -3,7 +3,7 @@
 (function () {
   var ESC_KEYCODE = 27;
 
-  var CARDS_QUANTITY = 8;
+  var CARDS_QUANTITY = 5;
 
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 65;

@@ -1,10 +1,13 @@
 'use strict';
 
 // main-pin.js
-// главный маркер
-// функция получения координат основной метки (неактивная страница)
+
 (function () {
+  // главный маркер
+
   var pinMain = document.querySelector('.map__pin--main');
+
+  // функция получения координат основной метки (неактивная страница)
 
   var getNonActivePinMainCoordinate = function () {
     var pinMainCoordinate = [];
@@ -24,23 +27,6 @@
     return pinMainActiveCoordinate;
   };
 
-  // поиск поля "Адрес" в форме
-
-  var formAddressValue = document.querySelector('#address');
-
-  // добавление первоначальных координат главного маркера в поле
-
-  formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', ' + getNonActivePinMainCoordinate()[1]);
-
-  // добавление обработчика событий для перетаскивания метки.
-  // Переводит страницу в активное состояние.
-  // Отрисовывает маркеры, убирает атрибут disabled и класс у недоступных элементов формы
-
-  var disabledForm = document.querySelectorAll('.ad-form--disabled');
-  var disabledElements = document.querySelectorAll('[disabled]');
-
-  var mapPin = document.querySelector('.map__pin--main');
-
   // функция ограничения перемещения маркера
 
   var getMainPinMovement = function (coordinates, coordinatesObj) {
@@ -53,89 +39,9 @@
     return coordinates;
   };
 
-  mapPin.addEventListener('mousedown', function (evt) {
-    evt.preventDefault();
-
-
-    var startCoordinates = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
-
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-
-      var shift = {
-        x: startCoordinates.x - moveEvt.clientX,
-        y: startCoordinates.y - moveEvt.clientY
-      };
-
-      startCoordinates = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      mapPin.style.left = getMainPinMovement(mapPin.offsetLeft - shift.x, window.constants.X_COORDINATES) + 'px';
-      mapPin.style.top = getMainPinMovement(mapPin.offsetTop - shift.y, window.constants.Y_COORDINATES) + 'px';
-      formAddressValue.setAttribute('value', getActivePinMainCoordinate()[0] + ', ' + getActivePinMainCoordinate()[1]);
-    };
-
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-
-      if (window.data.map.classList.contains('map--faded')) {
-        window.insertPin();
-      }
-
-      window.data.map.classList.remove('map--faded');
-
-
-      for (var i = 0; i < disabledElements.length; i++) {
-        disabledElements[i].disabled = false;
-      }
-
-      for (var j = 0; j < disabledForm.length; j++) {
-        disabledForm[j].classList.remove('ad-form--disabled');
-      }
-
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
-
-  // сброс формы при нажатии Очистить. Возвращает главный маркер на стартовую позицию
-
-  var resetButtonClickHandler = document.querySelector('.ad-form__reset');
-
-  resetButtonClickHandler.addEventListener('click', function () {
-    window.data.map.classList.add('map--faded');
-
-    if (window.data.map.querySelector('.map__card') !== null) {
-      window.utilites.deleteCard();
-    }
-
-    mapPin.style.left = window.constants.MAIN_PIN_START_X + 'px';
-    mapPin.style.top = window.constants.MAIN_PIN_START_Y + 'px';
-    formAddressValue.setAttribute('value', getNonActivePinMainCoordinate()[0] + ', ' + getNonActivePinMainCoordinate()[1]);
-    var pinsList = document.querySelector('.map__pins');
-    var mapPinsList = pinsList.querySelectorAll('.map__pin');
-
-
-    for (var k = window.data.adsNearbyList.length; k > 0; k--) {
-      var deletedPin = mapPinsList[k];
-      pinsList.removeChild(deletedPin);
-    }
-
-    for (var i = 0; i < disabledElements.length; i++) {
-      disabledElements[i].disabled = true;
-    }
-
-    for (var j = 0; j < disabledForm.length; j++) {
-      disabledForm[j].classList.add('ad-form--disabled');
-    }
-  });
+  window.mainPin = {
+    getNonActivePinMainCoordinate: getNonActivePinMainCoordinate,
+    getActivePinMainCoordinate: getActivePinMainCoordinate,
+    getMainPinMovement: getMainPinMovement
+  };
 })();

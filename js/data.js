@@ -3,84 +3,125 @@
 // data.js
 
 (function () {
-  var offerList = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-  var appartamentTypes = ['palace', 'flat', 'house', 'bungalo'];
-  var checkList = ['12:00', '13:00', '14:00'];
-  var featuresList = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var photosList = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-  var avatars = ['img/avatars/user01.png', 'img/avatars/user02.png', 'img/avatars/user03.png', 'img/avatars/user04.png', 'img/avatars/user05.png', 'img/avatars/user06.png', 'img/avatars/user07.png', 'img/avatars/user08.png'];
 
-  var map = document.querySelector('.map');
+  // поиск большого маркера
 
-  // функция для расчёта координат маркера
+  var mapPin = document.querySelector('.map__pin--main');
 
-  var getPinCoordinates = function () {
-    var x = window.utilites.getRandomNumber(window.constants.X_COORDINATES.min, window.constants.X_COORDINATES.max) + (window.constants.PIN_WIDTH / 2);
-    var y = window.utilites.getRandomNumber(window.constants.Y_COORDINATES.min, window.constants.Y_COORDINATES.max) + window.constants.PIN_HEIGHT + window.constants.PIN_END_HEIGHT;
-    var coordinates = [x, y];
-    return coordinates;
-  };
+  // поиск элементов, скрытых при неактивной странице
 
-  // функция создания массива photos в произвольном порядке
+  var disabledForm = document.querySelectorAll('.ad-form--disabled');
+  var disabledElements = document.querySelectorAll('[disabled]');
 
-  var shufflePhoto = function (arr) {
-    var photoArray = arr.slice();
-    photoArray.sort(function () {
-      return Math.random() - 0.5;
-    });
-    return photoArray;
-  };
+  // поиск поля "Адрес" в форме
 
-  // функция создания массива с features случайной длины
+  var formAddressValue = document.querySelector('#address');
 
-  var getRandomFeaturesList = function (featuresData) {
-    var featuresAmount = Math.round(Math.random() * (featuresData.length - 1));
-    var randomFeatures = featuresData.slice(featuresAmount);
-    return randomFeatures;
-  };
+  // добавление первоначальных координат главного маркера в поле
 
-  // функция генерации массива объектов
-  var getAdsCards = function () {
+  formAddressValue.setAttribute('value', window.mainPin.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPin.getNonActivePinMainCoordinate()[1]);
 
-    var cardsList = [];
-    for (var i = 0; i < window.constants.CARDS_QUANTITY; i++) {
-      var currentCoordinates = getPinCoordinates();
+  // добавление обработчика на нажатие курсором на большом маркере
+  // Переводит страницу в активное состояние.
+  // Отрисовывает маркеры, убирает атрибут disabled и класс у недоступных элементов формы
 
-      cardsList[i] = {
-        author: {
-          avatar: avatars[i]
-        },
+  mapPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
 
-        offer: {
-          title: offerList[i],
-          address: currentCoordinates[0] + ',' + currentCoordinates[1],
-          price: window.utilites.getRandomNumber(window.constants.PRICE_MIN, window.constants.PRICE_MAX),
-          type: window.utilites.getRandomArrayElement(appartamentTypes),
-          rooms: window.utilites.getRandomNumber(window.constants.ROOMS_MIN, window.constants.ROOMS_MAX),
-          guest: window.utilites.getRandomNumber(window.constants.GUEST_MIN, window.constants.GUEST_MAX),
-          checkin: window.utilites.getRandomArrayElement(checkList),
-          checkout: window.utilites.getRandomArrayElement(checkList),
-          features: getRandomFeaturesList(featuresList),
-          description: '',
-          photos: shufflePhoto(photosList)
-        },
+    var startCoordinates = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
 
-        location: {
-          x: currentCoordinates[0],
-          y: currentCoordinates[1]
-        }
+    // функция пересчёта координат перемещения большого маркера
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoordinates.x - moveEvt.clientX,
+        y: startCoordinates.y - moveEvt.clientY
       };
+
+      startCoordinates = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      mapPin.style.left = window.mainPin.getMainPinMovement(mapPin.offsetLeft - shift.x, window.constants.X_COORDINATES) + 'px';
+      mapPin.style.top = window.mainPin.getMainPinMovement(mapPin.offsetTop - shift.y, window.constants.Y_COORDINATES) + 'px';
+      formAddressValue.setAttribute('value', window.mainPin.getActivePinMainCoordinate()[0] + ', ' + window.mainPin.getActivePinMainCoordinate()[1]);
+    };
+
+    // функция отпускания мыши на большом маркере
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+
+      // отрисовка маркеров
+
+      if (window.utilites.map.classList.contains('map--faded')) {
+        window.backend.load(window.insertPin, window.errorHandler);
+      }
+
+      window.utilites.map.classList.remove('map--faded');
+
+      for (var i = 0; i < disabledElements.length; i++) {
+        disabledElements[i].disabled = false;
+      }
+
+      for (var j = 0; j < disabledForm.length; j++) {
+        disabledForm[j].classList.remove('ad-form--disabled');
+      }
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
+  // функция очистки страницы  Возвращает главный маркер на стартовую позицию
+
+  window.resetMain = function () {
+    window.utilites.map.classList.add('map--faded');
+
+    if (window.utilites.map.querySelector('.map__card') !== null) {
+      window.utilites.deleteCard();
     }
-    return cardsList;
+
+    mapPin.style.left = window.constants.MAIN_PIN_START_X + 'px';
+    mapPin.style.top = window.constants.MAIN_PIN_START_Y + 'px';
+    formAddressValue.setAttribute('value', window.mainPin.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPin.getNonActivePinMainCoordinate()[1]);
+    var pinsList = document.querySelector('.map__pins');
+    var mapPinsList = pinsList.querySelectorAll('.map__pin');
+
+
+    for (var k = window.constants.CARDS_QUANTITY; k > 0; k--) {
+      var deletedPin = mapPinsList[k];
+      pinsList.removeChild(deletedPin);
+    }
+
+    for (var i = 0; i < disabledElements.length; i++) {
+      disabledElements[i].disabled = true;
+    }
+
+    for (var j = 0; j < disabledForm.length; j++) {
+      disabledForm[j].classList.add('ad-form--disabled');
+    }
   };
 
-  // создание массива объектов
+  // поиск кнопки сброса формы Очистить.
 
-  var adsNearbyList = getAdsCards();
+  var resetButtonClickHandler = document.querySelector('.ad-form__reset');
+  var form = document.querySelector('.ad-form');
 
-  window.data = {
-    photosList: photosList,
-    map: map,
-    adsNearbyList: adsNearbyList
-  };
+  // обработчик на кнопку сброса формы
+
+  resetButtonClickHandler.addEventListener('click', function () {
+    form.reset();
+    window.resetMain();
+  });
 })();
