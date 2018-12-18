@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+  // поиск основного блока с классом map
+
+  var map = document.querySelector('.map');
+
   // случайное число для price от 1000 до 1000000 и rooms от 1 до 5, для количества гостей guest, для координат
 
   var getRandomNumber = function (min, max) {
@@ -16,12 +20,14 @@
   // функция удаления отрисованной карточки объявления
 
   var deleteCard = function () {
-    window.data.map.removeChild(window.data.map.querySelector('.map__card'));
+    map.removeChild(map.querySelector('.map__card'));
   };
+
 
   window.utilites = {
     getRandomNumber: getRandomNumber,
     getRandomArrayElement: getRandomArrayElement,
-    deleteCard: deleteCard
+    deleteCard: deleteCard,
+    map: map
   };
 })();
