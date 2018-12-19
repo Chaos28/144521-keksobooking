@@ -17,6 +17,10 @@
 
   var mapFilterContainer = document.querySelector('.map__filters-container');
 
+  // поиск заблокированных элементов фильтра
+
+  var disabledFilterElements = document.querySelector('.map__filters').querySelectorAll('[disabled]');
+
   // функция отрисовки маркера
 
   var getPinTemplate = function (dataList) {
@@ -53,7 +57,8 @@
     return pinElement;
   };
 
-  window.insertPin = function (dataInfo) {
+  var insertStartPins = function (dataInfo) {
+    window.adsList = dataInfo;
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < window.constants.CARDS_QUANTITY; i++) {
@@ -61,6 +66,32 @@
     }
 
     pinsList.appendChild(fragment);
+
+
+    document.querySelector('.map__filters').classList.remove('ad-form--disabled');
+
+    for (var j = 0; j < disabledFilterElements.length; j++) {
+      disabledFilterElements[j].disabled = false;
+    }
+  };
+
+  // функция удаления отрисованных маркеров
+
+  var deletePins = function () {
+    var mapPinsList = pinsList.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    for (var k = mapPinsList.length - 1; k >= 0; k--) {
+      pinsList.removeChild(mapPinsList[k]);
+    }
+
+  };
+
+  window.pins = {
+    insertStartPins: insertStartPins,
+    deletePins: deletePins,
+    getPinTemplate: getPinTemplate,
+    pinsList: pinsList,
+    disabledFilterElements: disabledFilterElements
   };
 
 })();

@@ -20,7 +20,9 @@
   // функция удаления отрисованной карточки объявления
 
   var deleteCard = function () {
-    map.removeChild(map.querySelector('.map__card'));
+    if (window.utilites.map.querySelector('.map__card') !== null) {
+      map.removeChild(map.querySelector('.map__card'));
+    }
   };
 
 

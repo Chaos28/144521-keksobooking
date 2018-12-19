@@ -10,8 +10,8 @@
 
   // поиск элементов, скрытых при неактивной странице
 
-  var disabledForm = document.querySelectorAll('.ad-form--disabled');
-  var disabledElements = document.querySelectorAll('[disabled]');
+  var disabledForm = document.querySelector('.ad-form');
+  var disabledFormElements = document.querySelector('.ad-form').querySelectorAll('[disabled]');
 
   // поиск поля "Адрес" в форме
 
@@ -53,6 +53,11 @@
       formAddressValue.setAttribute('value', window.mainPin.getActivePinMainCoordinate()[0] + ', ' + window.mainPin.getActivePinMainCoordinate()[1]);
     };
 
+
+    // создание пустого массива для последующего сохранения в него загруженных данных
+
+    window.adsList = [];
+
     // функция отпускания мыши на большом маркере
 
     var onMouseUp = function (upEvt) {
@@ -62,18 +67,16 @@
       // отрисовка маркеров
 
       if (window.utilites.map.classList.contains('map--faded')) {
-        window.backend.load(window.insertPin, window.errorHandler);
+        window.backend.load(window.pins.insertStartPins, window.errorHandler);
       }
 
       window.utilites.map.classList.remove('map--faded');
 
-      for (var i = 0; i < disabledElements.length; i++) {
-        disabledElements[i].disabled = false;
+      for (var i = 0; i < disabledFormElements.length; i++) {
+        disabledFormElements[i].disabled = false;
       }
 
-      for (var j = 0; j < disabledForm.length; j++) {
-        disabledForm[j].classList.remove('ad-form--disabled');
-      }
+      disabledForm.classList.remove('ad-form--disabled');
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -88,29 +91,23 @@
   window.resetMain = function () {
     window.utilites.map.classList.add('map--faded');
 
-    if (window.utilites.map.querySelector('.map__card') !== null) {
-      window.utilites.deleteCard();
-    }
+    window.utilites.deleteCard();
 
     mapPin.style.left = window.constants.MAIN_PIN_START_X + 'px';
     mapPin.style.top = window.constants.MAIN_PIN_START_Y + 'px';
     formAddressValue.setAttribute('value', window.mainPin.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPin.getNonActivePinMainCoordinate()[1]);
-    var pinsList = document.querySelector('.map__pins');
-    var mapPinsList = pinsList.querySelectorAll('.map__pin');
 
+    window.pins.deletePins();
 
-    for (var k = window.constants.CARDS_QUANTITY; k > 0; k--) {
-      var deletedPin = mapPinsList[k];
-      pinsList.removeChild(deletedPin);
+    for (var i = 0; i < disabledFormElements.length; i++) {
+      disabledFormElements[i].disabled = true;
     }
 
-    for (var i = 0; i < disabledElements.length; i++) {
-      disabledElements[i].disabled = true;
+    for (var k = 0; k < window.pins.disabledFilterElements.length; k++) {
+      window.pins.disabledFilterElements[k].disabled = true;
     }
 
-    for (var j = 0; j < disabledForm.length; j++) {
-      disabledForm[j].classList.add('ad-form--disabled');
-    }
+    disabledForm.classList.add('ad-form--disabled');
   };
 
   // поиск кнопки сброса формы Очистить.
