@@ -64,12 +64,12 @@
     var insertFeaturesCard = function (featuresData) {
       popupFeatures.innerHTML = '';
 
-      for (var k = 0; k < featuresData.offer.features.length; k++) {
+      Array.from(featuresData.offer.features).forEach(function (elementFeature) {
         var featuresElement = featuresIcon.cloneNode(true);
         featuresElement.setAttribute('class', 'popup__feature');
-        featuresElement.classList.add('popup__feature' + '--' + featuresData.offer.features[k]);
+        featuresElement.classList.add('popup__feature' + '--' + elementFeature);
         popupFeatures.appendChild(featuresElement);
-      }
+      });
     };
 
     // функция добавления фотографий объявления
@@ -77,11 +77,11 @@
     var insertPhotosCard = function (photoData) {
       popupPhotos.innerHTML = '';
 
-      for (var j = 0; j < photoData.offer.photos.length; j++) {
+      Array.from(photoData.offer.photos).forEach(function (elementPhoto) {
         var photoCard = photo.cloneNode(true);
-        photoCard.src = photoData.offer.photos[j];
+        photoCard.src = elementPhoto;
         popupPhotos.appendChild(photoCard);
-      }
+      });
     };
 
     insertDataCard(cardData);

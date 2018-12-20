@@ -37,13 +37,13 @@
 
   // установка минимальной цены за жилье
 
-  var setMinPrice = function () {
+  var minPriceChangeHandler = function () {
     var type = houseType.value;
     priceInput.setAttribute('min', MIN_PRICES[type]);
     priceInput.setAttribute('placeholder', MIN_PRICES[type]);
   };
 
-  var setGuestQuantity = function () {
+  var guestQuantityChangeHandler = function () {
 
     Array.from(guestNumber).forEach(function (element) {
       element.disabled = false;
@@ -80,7 +80,7 @@
 
   // синхронизация времени заезда и выезда (и наоборот)
 
-  var timeSynchronize = function (evt) {
+  var timeChangeHandler = function (evt) {
     if (evt.target.closest('#timein')) {
       checkout.value = checkin.value;
     }
@@ -88,11 +88,11 @@
     checkin.value = checkout.value;
   };
 
-  setGuestQuantity();
-  houseType.addEventListener('change', setMinPrice);
+  guestQuantityChangeHandler();
+  minPriceChangeHandler();
 
-  roomSelect.addEventListener('change', setGuestQuantity);
-
-  checkin.addEventListener('change', timeSynchronize);
-  checkout.addEventListener('change', timeSynchronize);
+  houseType.addEventListener('change', minPriceChangeHandler);
+  roomSelect.addEventListener('change', guestQuantityChangeHandler);
+  checkin.addEventListener('change', timeChangeHandler);
+  checkout.addEventListener('change', timeChangeHandler);
 })();
