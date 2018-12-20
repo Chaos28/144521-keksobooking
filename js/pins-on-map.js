@@ -4,6 +4,11 @@
 
 (function () {
 
+
+  // создание пустого массива для последующего сохранения в него загруженных данных
+
+  var adsList = [];
+
   // поиск большого маркера
 
   var mapPin = document.querySelector('.map__pin--main');
@@ -19,7 +24,7 @@
 
   // добавление первоначальных координат главного маркера в поле
 
-  formAddressValue.setAttribute('value', window.mainPin.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPin.getNonActivePinMainCoordinate()[1]);
+  formAddressValue.setAttribute('value', window.mainPinCoordinates.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPinCoordinates.getNonActivePinMainCoordinate()[1]);
 
   // добавление обработчика на нажатие курсором на большом маркере
   // Переводит страницу в активное состояние.
@@ -48,15 +53,10 @@
         y: moveEvt.clientY
       };
 
-      mapPin.style.left = window.mainPin.getMainPinMovement(mapPin.offsetLeft - shift.x, window.constants.X_COORDINATES) + 'px';
-      mapPin.style.top = window.mainPin.getMainPinMovement(mapPin.offsetTop - shift.y, window.constants.Y_COORDINATES) + 'px';
-      formAddressValue.setAttribute('value', window.mainPin.getActivePinMainCoordinate()[0] + ', ' + window.mainPin.getActivePinMainCoordinate()[1]);
+      mapPin.style.left = window.mainPinCoordinates.getMainPinMovement(mapPin.offsetLeft - shift.x, window.constants.X_COORDINATES) + 'px';
+      mapPin.style.top = window.mainPinCoordinates.getMainPinMovement(mapPin.offsetTop - shift.y, window.constants.Y_COORDINATES) + 'px';
+      formAddressValue.setAttribute('value', window.mainPinCoordinates.getActivePinMainCoordinate()[0] + ', ' + window.mainPinCoordinates.getActivePinMainCoordinate()[1]);
     };
-
-
-    // создание пустого массива для последующего сохранения в него загруженных данных
-
-    window.adsList = [];
 
     // функция отпускания мыши на большом маркере
 
@@ -66,15 +66,15 @@
 
       // отрисовка маркеров
 
-      if (window.utilites.map.classList.contains('map--faded')) {
+      if (window.utilities.map.classList.contains('map--faded')) {
         window.backend.load(window.pins.insertStartPins, window.errorHandler);
       }
 
-      window.utilites.map.classList.remove('map--faded');
+      window.utilities.map.classList.remove('map--faded');
 
-      for (var i = 0; i < disabledFormElements.length; i++) {
-        disabledFormElements[i].disabled = false;
-      }
+      Array.from(disabledFormElements).forEach(function (element) {
+        element.disabled = false;
+      });
 
       disabledForm.classList.remove('ad-form--disabled');
 
@@ -88,24 +88,24 @@
 
   // функция очистки страницы  Возвращает главный маркер на стартовую позицию
 
-  window.resetMain = function () {
-    window.utilites.map.classList.add('map--faded');
+  var resetMain = function () {
+    window.utilities.map.classList.add('map--faded');
 
-    window.utilites.deleteCard();
+    window.utilities.deleteCard();
 
     mapPin.style.left = window.constants.MAIN_PIN_START_X + 'px';
     mapPin.style.top = window.constants.MAIN_PIN_START_Y + 'px';
-    formAddressValue.setAttribute('value', window.mainPin.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPin.getNonActivePinMainCoordinate()[1]);
+    formAddressValue.setAttribute('value', window.mainPinCoordinates.getNonActivePinMainCoordinate()[0] + ', ' + window.mainPinCoordinates.getNonActivePinMainCoordinate()[1]);
 
     window.pins.deletePins();
 
-    for (var i = 0; i < disabledFormElements.length; i++) {
-      disabledFormElements[i].disabled = true;
-    }
+    Array.from(disabledFormElements).forEach(function (element) {
+      element.disabled = true;
+    });
 
-    for (var k = 0; k < window.pins.disabledFilterElements.length; k++) {
-      window.pins.disabledFilterElements[k].disabled = true;
-    }
+    Array.from(window.pins.disabledFilterElements).forEach(function (element) {
+      element.disabled = true;
+    });
 
     disabledForm.classList.add('ad-form--disabled');
   };
@@ -114,11 +114,18 @@
 
   var resetButtonClickHandler = document.querySelector('.ad-form__reset');
   var form = document.querySelector('.ad-form');
+  var formFilter = document.querySelector('.map__filters');
 
   // обработчик на кнопку сброса формы
 
   resetButtonClickHandler.addEventListener('click', function () {
     form.reset();
-    window.resetMain();
+    formFilter.reset();
+    window.pinsOnMap.resetMain();
   });
+
+  window.pinsOnMap = {
+    adsList: adsList,
+    resetMain: resetMain
+  };
 })();

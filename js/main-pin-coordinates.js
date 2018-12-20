@@ -39,7 +39,7 @@
     return coordinates;
   };
 
-  window.mainPin = {
+  window.mainPinCoordinates = {
     getNonActivePinMainCoordinate: getNonActivePinMainCoordinate,
     getActivePinMainCoordinate: getActivePinMainCoordinate,
     getMainPinMovement: getMainPinMovement

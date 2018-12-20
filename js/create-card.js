@@ -4,10 +4,10 @@
 
 // функция сопоставления типа жилья
 (function () {
-  var getAppartamentListElement = function (appartamentType) {
+  var getApartmentListElement = function (apartmentType) {
     var resultType;
 
-    switch (appartamentType) {
+    switch (apartmentType) {
       case 'flat':
         resultType = 'Квартира';
         break;
@@ -33,8 +33,6 @@
   window.createCard = function (cardData) {
     var cardExample = document.querySelector('#card').content.querySelector('.map__card');
     var cardTemplate = cardExample.cloneNode(true);
-    // добавление данных из массива в карточку
-
     var popupAvatar = cardTemplate.querySelector('.popup__avatar');
     var popupTitle = cardTemplate.querySelector('.popup__title');
     var popupAddress = cardTemplate.querySelector('.popup__text--address');
@@ -43,43 +41,55 @@
     var popupCapacity = cardTemplate.querySelector('.popup__text--capacity');
     var popupTime = cardTemplate.querySelector('.popup__text--time');
     var popupDescription = cardTemplate.querySelector('.popup__description');
-
-    popupAvatar.src = cardData.author.avatar;
-    popupTitle.textContent = cardData.offer.title;
-    popupAddress.textContent = cardData.offer.address;
-    popupPrice.textContent = cardData.offer.price + '₽/ночь';
-    popupType.textContent = getAppartamentListElement(cardData.offer.type);
-    popupCapacity.textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests;
-    popupTime.textContent = 'Заезд после ' + cardData.offer.checkin + ', выезд до ' + cardData.offer.checkout;
-    popupDescription.textContent = cardData.offer.description;
-
     var popupFeatures = cardTemplate.querySelector('.popup__features');
     var featuresIcon = cardTemplate.querySelector('.popup__feature');
-    popupFeatures.innerHTML = '';
-
-    for (var k = 0; k < cardData.offer.features.length; k++) {
-      var featuresElement = featuresIcon.cloneNode(true);
-      featuresElement.setAttribute('class', 'popup__feature');
-      featuresElement.classList.add('popup__feature' + '--' + cardData.offer.features[k]);
-      popupFeatures.appendChild(featuresElement);
-    }
-
-    // отображение фотографий
-
     var popupPhotos = cardTemplate.querySelector('.popup__photos');
     var photo = cardTemplate.querySelector('.popup__photo');
-    popupPhotos.innerHTML = '';
 
-    for (var j = 0; j < cardData.offer.photos.length; j++) {
-      var photoCard = photo.cloneNode(true);
-      photoCard.src = cardData.offer.photos[j];
+    // функция добавления данных карты объявления
 
-      popupPhotos.appendChild(photoCard);
-    }
+    var insertDataCard = function (cardInfo) {
+      popupAvatar.src = cardInfo.author.avatar;
+      popupTitle.textContent = cardInfo.offer.title;
+      popupAddress.textContent = cardInfo.offer.address;
+      popupPrice.textContent = cardInfo.offer.price + '₽/ночь';
+      popupType.textContent = getApartmentListElement(cardInfo.offer.type);
+      popupCapacity.textContent = cardInfo.offer.rooms + ' комнаты для ' + cardInfo.offer.guests;
+      popupTime.textContent = 'Заезд после ' + cardInfo.offer.checkin + ', выезд до ' + cardInfo.offer.checkout;
+      popupDescription.textContent = cardInfo.offer.description;
+    };
 
+    // функция добавления иконок удобств объявления
+
+    var insertFeaturesCard = function (featuresData) {
+      popupFeatures.innerHTML = '';
+
+      for (var k = 0; k < featuresData.offer.features.length; k++) {
+        var featuresElement = featuresIcon.cloneNode(true);
+        featuresElement.setAttribute('class', 'popup__feature');
+        featuresElement.classList.add('popup__feature' + '--' + featuresData.offer.features[k]);
+        popupFeatures.appendChild(featuresElement);
+      }
+    };
+
+    // функция добавления фотографий объявления
+
+    var insertPhotosCard = function (photoData) {
+      popupPhotos.innerHTML = '';
+
+      for (var j = 0; j < photoData.offer.photos.length; j++) {
+        var photoCard = photo.cloneNode(true);
+        photoCard.src = photoData.offer.photos[j];
+        popupPhotos.appendChild(photoCard);
+      }
+    };
+
+    insertDataCard(cardData);
+    insertFeaturesCard(cardData);
+    insertPhotosCard(cardData);
     // добавление обработчика закрытия карточки по нажатию на крестик
 
-    cardTemplate.querySelector('.popup__close').addEventListener('click', window.utilites.deleteCard);
+    cardTemplate.querySelector('.popup__close').addEventListener('click', window.utilities.deleteCard);
 
     // проверка на наличие данных при загрузке и скрытие блоков без данных
 
@@ -130,8 +140,8 @@
 
   window.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.constants.ESC_KEYCODE) {
-      if (window.utilites.map.querySelector('.map__card') !== null) {
-        window.utilites.deleteCard();
+      if (window.utilities.map.querySelector('.map__card') !== null) {
+        window.utilities.deleteCard();
       }
     }
   });

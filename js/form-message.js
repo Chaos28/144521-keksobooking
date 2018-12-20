@@ -6,7 +6,7 @@
   var main = document.querySelector('main');
 
   var getSuccessModal = function () {
-    var successMessage = document.querySelector('#success').content.querySelector('.success');
+    var successMessage = document.querySelector('#success').content.querySelector('.success').cloneNode(true);
 
     main.insertBefore(successMessage, main.firstChild);
 
@@ -26,7 +26,7 @@
   };
 
   var getErrorModal = function () {
-    var errorMessage = document.querySelector('#error').content.querySelector('.error');
+    var errorMessage = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
     var errorButton = document.querySelector('#error').content.querySelector('.error__button');
     main.insertBefore(errorMessage, main.firstChild);
 
@@ -56,7 +56,7 @@
   form.addEventListener('submit', function (evt) {
     window.backend.upload(new FormData(form), getSuccessModal, getErrorModal);
     form.reset();
-    window.resetMain();
+    window.pinsOnMap.resetMain();
     evt.preventDefault();
   });
 })();

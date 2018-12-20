@@ -37,27 +37,27 @@
 
   // функция фильтрации объявлений по типу жилья
 
-  var housingTypeChange = function (ad) {
+  var housingTypeChange = function (realtor) {
     if (housingTypeSelect.value === BASE_VALUE) {
       return true;
     }
 
-    return ad.offer.type === housingTypeSelect.value;
+    return realtor.offer.type === housingTypeSelect.value;
   };
 
   // функция фильтрации объявлений по диапазону цен
 
-  var housingPriceChange = function (ad) {
+  var housingPriceChange = function (realtor) {
     switch (housingPriceSelect.value) {
 
       case 'low':
-        return ad.offer.price <= HousingPriceRange.low.maxPrice;
+        return realtor.offer.price <= HousingPriceRange.low.maxPrice;
 
       case 'middle':
-        return ad.offer.price >= HousingPriceRange.middle.minPrice && ad.offer.price <= HousingPriceRange.middle.maxPrice;
+        return realtor.offer.price >= HousingPriceRange.middle.minPrice && realtor.offer.price <= HousingPriceRange.middle.maxPrice;
 
       case 'high':
-        return ad.offer.price >= HousingPriceRange.high.minPrice;
+        return realtor.offer.price >= HousingPriceRange.high.minPrice;
 
       default:
         return true;
@@ -66,27 +66,27 @@
 
   // функция фильтрации объявлений по количеству комнат
 
-  var housingRoomsChange = function (ad) {
+  var housingRoomsChange = function (realtor) {
     if (housingRoomsSelect.value === BASE_VALUE) {
       return true;
     }
 
-    return ad.offer.rooms === +housingRoomsSelect.value;
+    return realtor.offer.rooms === +housingRoomsSelect.value;
   };
 
-  var housingGuestsChange = function (ad) {
+  var housingGuestsChange = function (realtor) {
     if (housingGuestsSelect.value === BASE_VALUE) {
       return true;
     }
 
-    return ad.offer.guests === +housingGuestsSelect.value;
+    return realtor.offer.guests === +housingGuestsSelect.value;
   };
 
   // функция фильтрации объявлений по удобствам
 
-  var housingFeaturesChange = function (ad) {
+  var housingFeaturesChange = function (realtor) {
     for (var i = 0; i < featuresCheckboxList.length; i++) {
-      if (featuresCheckboxList[i].checked && ad.offer.features.indexOf(featuresCheckboxList[i].value) < 0) {
+      if (featuresCheckboxList[i].checked && realtor.offer.features.indexOf(featuresCheckboxList[i].value) < 0) {
         return false;
       }
     }
@@ -96,11 +96,11 @@
   var insertFilteredPins = function (filteredPins) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < filteredPins.length; i++) {
+    Array.from(filteredPins).forEach(function (pin, i) {
       if (i < window.constants.CARDS_QUANTITY) {
-        fragment.appendChild(window.pins.getPinTemplate(filteredPins[i]));
+        fragment.appendChild(window.pins.getPinTemplate(pin));
       }
-    }
+    });
 
     window.pins.pinsList.appendChild(fragment);
   };
@@ -108,12 +108,12 @@
   // функция добавления отфильтрованных объявлений
 
   var filterAds = function () {
-    var adsListCopy = window.adsList.slice();
+    var adsListCopy = window.pinsOnMap.adsList.slice();
 
     window.pins.deletePins();
-    window.utilites.deleteCard();
-    var filteredAds = adsListCopy.filter(function (ad) {
-      return housingTypeChange(ad) && housingPriceChange(ad) && housingRoomsChange(ad) && housingGuestsChange(ad) && housingFeaturesChange(ad);
+    window.utilities.deleteCard();
+    var filteredAds = adsListCopy.filter(function (realtor) {
+      return housingTypeChange(realtor) && housingPriceChange(realtor) && housingRoomsChange(realtor) && housingGuestsChange(realtor) && housingFeaturesChange(realtor);
     });
 
     if (filteredAds.length > 0) {

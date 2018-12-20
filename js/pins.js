@@ -35,8 +35,8 @@
     // При клике на другой маркер удаляется старая карточка и создается новая
 
     pinElement.addEventListener('click', function () {
-      if (window.utilites.map.querySelector('.map__card') !== null) {
-        window.utilites.deleteCard();
+      if (window.utilities.map.querySelector('.map__card') !== null) {
+        window.utilities.deleteCard();
       }
 
       // удаление выделения маркера при выборе другого маркера
@@ -52,27 +52,29 @@
 
       // отрисовка карточки
 
-      window.utilites.map.insertBefore(window.createCard(dataList), mapFilterContainer);
+      window.utilities.map.insertBefore(window.createCard(dataList), mapFilterContainer);
     });
     return pinElement;
   };
 
   var insertStartPins = function (dataInfo) {
-    window.adsList = dataInfo;
+    window.pinsOnMap.adsList = dataInfo;
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < window.constants.CARDS_QUANTITY; i++) {
-      fragment.appendChild(getPinTemplate(dataInfo[i]));
-    }
+    Array.from(window.pinsOnMap.adsList).forEach(function (element, i) {
+      if (i < window.constants.CARDS_QUANTITY) {
+        fragment.appendChild(getPinTemplate(element));
+      }
+    });
 
     pinsList.appendChild(fragment);
 
 
     document.querySelector('.map__filters').classList.remove('ad-form--disabled');
 
-    for (var j = 0; j < disabledFilterElements.length; j++) {
-      disabledFilterElements[j].disabled = false;
-    }
+    disabledFilterElements.forEach(function (element) {
+      element.disabled = false;
+    });
   };
 
   // функция удаления отрисованных маркеров
@@ -80,10 +82,9 @@
   var deletePins = function () {
     var mapPinsList = pinsList.querySelectorAll('.map__pin:not(.map__pin--main)');
 
-    for (var k = mapPinsList.length - 1; k >= 0; k--) {
-      pinsList.removeChild(mapPinsList[k]);
-    }
-
+    Array.from(mapPinsList).forEach(function (pin) {
+      pinsList.removeChild(pin);
+    });
   };
 
   window.pins = {

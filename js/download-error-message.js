@@ -11,6 +11,6 @@
     node.textContent = errorMessage;
 
     document.body.insertAdjacentElement('afterbegin', node);
-    window.utilites.map.style.opacity = 0.5;
+    window.utilities.map.style.opacity = 0.5;
   };
 })();

@@ -31,7 +31,9 @@
 
   var roomSelect = document.querySelector('#room_number');
   var roomGuest = document.querySelector('#capacity');
-  var roomGuestNumber = roomGuest.querySelectorAll('option');
+
+  var roomNumber = roomSelect.querySelectorAll('option');
+  var guestNumber = roomGuest.querySelectorAll('option');
 
   // установка минимальной цены за жилье
 
@@ -41,40 +43,38 @@
     priceInput.setAttribute('placeholder', MIN_PRICES[type]);
   };
 
-  // функция задания стартового значения количества гостей для 1 комнаты по умолчанию (атрибут selected)
-
-  var getRoomGuestStart = function () {
-    roomGuest.querySelector('option[value="0"]').remove();
-    roomGuest.querySelector('option[value="2"]').remove();
-    roomGuest.querySelector('option[value="3"]').remove();
-  };
-
-  // синхронизация количества комнат и допустимого числа гостей
-
   var setGuestQuantity = function () {
-    roomGuest.innerHTML = '';
-    var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < roomGuestNumber.length; i++) {
-      fragment.appendChild(roomGuestNumber[i]);
-    }
+    Array.from(guestNumber).forEach(function (element) {
+      element.disabled = false;
+    });
 
-    roomGuest.appendChild(fragment);
-    var roomNumber = roomSelect.value;
-
-    if (roomNumber === ROOM_QUANTITY[0]) {
-      roomGuest.querySelector('option[value="0"]').remove();
-      roomGuest.querySelector('option[value="2"]').remove();
-      roomGuest.querySelector('option[value="3"]').remove();
-    } else if (roomNumber === ROOM_QUANTITY[1]) {
-      roomGuest.querySelector('option[value="0"]').remove();
-      roomGuest.querySelector('option[value="3"]').remove();
-    } else if (roomNumber === ROOM_QUANTITY[2]) {
-      roomGuest.querySelector('option[value="0"]').remove();
-    } else if (roomNumber === ROOM_QUANTITY[3]) {
-      roomGuest.querySelector('option[value="1"]').remove();
-      roomGuest.querySelector('option[value="2"]').remove();
-      roomGuest.querySelector('option[value="3"]').remove();
+    for (var i = 0; i < roomNumber.length; i++) {
+      if (roomNumber[i].selected === true) {
+        switch (roomNumber[i].value) {
+          case ROOM_QUANTITY[0]:
+            guestNumber[2].selected = true;
+            guestNumber[0].disabled = true;
+            guestNumber[1].disabled = true;
+            guestNumber[3].disabled = true;
+            break;
+          case ROOM_QUANTITY[1]:
+            guestNumber[1].selected = true;
+            guestNumber[0].disabled = true;
+            guestNumber[3].disabled = true;
+            break;
+          case ROOM_QUANTITY[2]:
+            guestNumber[0].selected = true;
+            guestNumber[3].disabled = true;
+            break;
+          case ROOM_QUANTITY[3]:
+            guestNumber[3].selected = true;
+            guestNumber[0].disabled = true;
+            guestNumber[1].disabled = true;
+            guestNumber[2].disabled = true;
+            break;
+        }
+      }
     }
   };
 
@@ -88,9 +88,9 @@
     checkin.value = checkout.value;
   };
 
+  setGuestQuantity();
   houseType.addEventListener('change', setMinPrice);
 
-  getRoomGuestStart();
   roomSelect.addEventListener('change', setGuestQuantity);
 
   checkin.addEventListener('change', timeSynchronize);
