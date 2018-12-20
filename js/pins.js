@@ -42,9 +42,10 @@
       // удаление выделения маркера при выборе другого маркера
 
       var addedPinsList = pinsList.querySelectorAll('.map__pin');
-      for (var i = 0; i < addedPinsList.length; i++) {
-        addedPinsList[i].classList.remove('map__pin--active');
-      }
+
+      Array.from(addedPinsList).forEach(function (pin) {
+        pin.classList.remove('map__pin--active');
+      });
 
       // выделение выбранного маркера
 
@@ -54,6 +55,7 @@
 
       window.utilities.map.insertBefore(window.createCard(dataList), mapFilterContainer);
     });
+
     return pinElement;
   };
 
